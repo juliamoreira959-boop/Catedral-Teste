@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gêmeo Digital - Catedral Cristo Rei</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: #1e293b;
+            padding: 20px 40px;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 22px;
+            font-weight: 600;
+            color: #3b82f6;
+        }
+
+        header h1 span { color: #f1f5f9; }
+        header p { font-size: 13px; color: #94a3b8; }
+
+        .badge-realtime {
+            background-color: #10b981;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+
+        main {
+            display: flex;
+            flex: 1;
+            padding: 25px;
+            gap: 25px;
+            max-width: 1800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .painel-lateral {
+            flex: 1.2;
+            background-color: #1e293b;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-height: 900px;
+            overflow-y: auto;
+        }
+
+        .painel-lateral h2 {
+            font-size: 15px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 8px;
+        }
+
+        .menu-navegacao { display: flex; flex-direction: column; gap: 10px; }
+
+        .btn-analise {
+            background-color: #334155;
+            color: #f1f5f9;
+            border: 1px solid #475569;
+            padding: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-analise:hover { background-color: #475569; border-color: #3b82f6; }
+        .btn-analise.ativo {
+            background-color: #2563eb;
+            border-color: #3b82f6;
+            box-shadow: 0 0 12px rgba(37, 99, 235, 0.4);
+        }
+
+        .grid-telemetria {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .metrica {
+            background-color: #0f172a;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border-left: 4px solid #06b6d4;
+            transition: all 0.5s ease;
+        }
+
+        .metrica h3 { font-size: 10px; color: #64748b; text-transform: uppercase; margin-bottom: 3px; }
+        .metrica p { font-size: 14px; font-weight: 600; color: #cbd5e1; }
+        .metrica span.unidade { font-size: 11px; color: #64748b; font-weight: normal; }
+
+        .chart-container-nativo {
+            background-color: #0f172a;
+            padding: 20px 15px 10px 15px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            height: 180px;
+            position: relative;
+        }
+
+        .barra-fft {
+            background: linear-gradient(to top, #0891b2, #06b6d4);
+            width: 18%;
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            transition: height 0.5s ease;
+        }
+
+        .barra-fft:hover { background: #22d3ee; box-shadow: 0 0 10px rgba(34, 211, 238, 0.6); }
+        .barra-label { position: absolute; bottom: -22px; font-size: 10px; color: #64748b; white-space: nowrap; }
+        .barra-valor { position: absolute; top: -20px; font-size: 10px; color: #06b6d4; font-weight: bold; }
+
+        .container-3d {
+            flex: 3;
+            background-color: #1e293b;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topo-3d {
+            background-color: #1e293b;
+            padding: 15px 20px;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .topo-3d span { font-weight: 600; font-size: 14px; color: #cbd5e1; }
+        .instrucao-mouse {
+            font-size: 11px;
+            color: #38bdf8;
+            background-color: #0c4a6e;
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        iframe { width: 100%; height: 720px; border: none; background-color: #ffffff; }
+
+        footer {
+            background-color: #0f172a;
+            color: #475569;
+            text-align: center;
+            padding: 15px;
+            font-size: 12px;
+            border-top: 1px solid #1e293b;
+        }
+
+        @media (max-width: 1100px) {
+            main { flex-direction: column; }
+            .painel-lateral { max-height: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div>
+            <h1>GÊMEO DIGITAL <span>| Catedral Cristo Rei</span></h1>
+            <p>Análise Avançada FEM (Método de Elementos Finitos) & Monitoramento Dinâmico</p>
+        </div>
+        <div id="status-badge" class="badge-realtime">📡 Telemetria Ativa</div>
+    </header>
+
+    <main>
+        <section class="painel-lateral">
+            <h2>Navegação Estrutural</h2>
+            <div class="menu-navegacao">
+                <button class="btn-analise ativo" onclick="alternarVisao('deformacao', this)">
+                    📊 Deformações Globais (DISP)
+                </button>
+                <button class="btn-analise" onclick="alternarVisao('vibracao', this)">
+                    🌀 Zonas de Vibração Crítica
+                </button>
+            </div>
+
+            <h2>Leitura de Sensores (SHM)</h2>
+            <div class="grid-telemetria">
+                <div id="box-tempo" class="metrica" style="border-left-color: #eab308;">
+                    <h3>Tempo Coleta</h3>
+                    <p id="val-tempo">-- <span class="unidade">s</span></p>
+                </div>
+                <div id="box-status" class="metrica" style="border-left-color: #10b981;">
+                    <h3>Status Estrutura</h3>
+                    <p id="val-status" style="color: #10b981;">Conectando...</p>
+                </div>
+                <div id="box-x" class="metrica">
+                    <h3>Aceleração X</h3>
+                    <p id="val-acel-x">-- <span class="unidade">g</span></p>
+                </div>
+                <div id="box-y" class="metrica">
+                    <h3>Aceleração Y</h3>
+                    <p id="val-acel-y">-- <span class="unidade">g</span></p>
+                </div>
+                <div id="box-z" class="metrica" style="border-left-color: #ef4444;">
+                    <h3>Aceleração Z</h3>
+                    <p id="val-acel-z">-- <span class="unidade">g</span></p>
+                </div>
+                <div class="metrica" style="border-left-color: #a855f7;">
+                    <h3>Metodologia</h3>
+                    <p>FEM (Linear)</p>
+                </div>
+            </div>
+
+            <h2>Espectro de Frequência (FFT) - Magnitude Z</h2>
+            <div class="chart-container-nativo">
+                <div class="barra-fft" style="height: 5%;">
+                    <span class="barra-valor">0.01</span>
+                    <span class="barra-label">0.0 Hz</span>
+                </div>
+                <div class="barra-fft" style="height: 15%;">
+                    <span class="barra-valor">0.05</span>
+<span class="barra-label">0.5 Hz</span>
+                </div>
+                <div class="barra-fft" style="height: 90%; background: linear-gradient(to top, #0284c7, #38bdf8);">
+                    <span class="barra-valor" style="color: #38bdf8;">0.536</span>
+                    <span class="barra-label" style="color: #38bdf8; font-weight: bold;">1.25 Hz (M1)</span>
+                </div>
+                <div class="barra-fft" style="height: 25%;">
+                    <span class="barra-valor">0.066</span>
+                    <span class="barra-label">2.50 Hz (M2)</span>
+                </div>
+                <div class="barra-fft" style="height: 12%;">
+                    <span class="barra-valor">0.017</span>
+                    <span class="barra-label">3.75 Hz (M3)</span>
+                </div>
+            </div>
+            <div style="height: 15px;"></div>
+        </section>
+
+        <section class="container-3d">
+            <div class="topo-3d">
+                <span id="titulo-visualizador">Visualização Atual: Deformações Globais (DISP)</span>
+                <span class="instrucao-mouse">🖱️ Use o mouse para rotacionar livremente a casca</span>
+            </div>
+            <iframe id="janela3d" src="catedral_cristo_rei_3d.html"></iframe>
+        </section>
+    </main>
+
+    <footer>
+        &copy; 2026 Gêmeo Digital de Infraestruturas Civis Complexas. Desenvolvido com CalculiX, PyVista e Web3D.
+    </footer>
+
+    <script>
+        const dadosSimulados = [
+            { tempo: 87.29, x: -0.0460, y: 0.0239, z: 1.0078 },
+            { tempo: 102.45, x: 0.0342, y: -0.0114, z: 1.0225 },
+            { tempo: 116.50, x: -0.0116, y: -0.0087, z: 0.9525 },
+            { tempo: 130.80, x: -0.0118, y: -0.0326, z: 1.0405 },
+            { tempo: 144.15, x: 0.0035, y: -0.0219, z: 1.0053 },
+            { tempo: 158.85, x: -0.0463, y: 0.0429, z: 0.9687 },
+            { tempo: 172.72, x: -0.0476, y: 0.0075, z: 0.9788 },
+            { tempo: 188.24, x: -0.0043, y: 0.0446, z: 1.0287 },
+            { tempo: 201.35, x: -0.0448, y: -0.0199, z: 1.0060 },
+            { tempo: 215.30, x: 0.1200, y: 0.0950, z: 1.0550 }, 
+            { tempo: 230.87, x: -0.2100, y: 0.1800, z: 1.0950 }, 
+            { tempo: 246.24, x: 0.0026, y: 0.0128, z: 1.0063 }
+        ];
+
+        let indiceAtual = 0;
+
+        function atualizarTelemetria() {
+            const amostra = dadosSimulados[indiceAtual];
+            
+            document.getElementById('val-tempo').innerHTML = amostra.tempo.toFixed(2) + ' <span class="unidade">s</span>';
+            document.getElementById('val-acel-x').innerHTML = amostra.x.toFixed(4) + ' <span class="unidade">g</span>';
+            document.getElementById('val-acel-y').innerHTML = amostra.y.toFixed(4) + ' <span class="unidade">g</span>';
+            document.getElementById('val-acel-z').innerHTML = amostra.z.toFixed(4) + ' <span class="unidade">g</span>';
+
+            const statusText = document.getElementById('val-status');
+            const statusBox = document.getElementById('box-status');
+            const badge = document.getElementById('status-badge');
+
+            const desvioZ = Math.abs(amostra.z - 1.0);
+
+            if (desvioZ >= 0.09) {
+                statusText.innerText = "CRÍTICO";
+                statusText.style.color = "#ef4444";
+                statusBox.style.borderLeftColor = "#ef4444";
+                badge.style.backgroundColor = "#ef4444";
+                badge.innerText = "🚨 ALERTA ESTRUTURAL";
+            } else if (desvioZ >= 0.05) {
+                statusText.innerText = "ALERTA";
+                statusText.style.color = "#eab308";
+                statusBox.style.borderLeftColor = "#eab308";
+                badge.style.backgroundColor = "#eab308";
+                badge.innerText = "⚠️ OSCILAÇÃO ANORMAL";
+            } else {
+                statusText.innerText = "Normal";
+                statusText.style.color = "#10b981";
+                statusBox.style.borderLeftColor = "#10b981";
+                badge.style.backgroundColor = "#10b981";
+                badge.innerText = "📡 Telemetria Ativa";
+            }
+
+            indiceAtual = (indiceAtual + 1) % dadosSimulados.length;
+        }
+
+        atualizarTelemetria();
+        setInterval(atualizarTelemetria, 2000);
+
+        function alternarVisao(tipo, elemento) {
+            document.querySelectorAll('.btn-analise').forEach(btn => btn.classList.remove('ativo'));
+            elemento.classList.add('ativo');
+
+            const iframe = document.getElementById('janela3d');
+            const titulo = document.getElementById('titulo-visualizador');
+
+            if (tipo === 'deformacao') {
+                titulo.innerText = "Visualização Atual: Deformações Globais (DISP)";
+                iframe.src = "catedral_cristo_rei_3d.html"; 
+            } else if (tipo === 'vibracao') {
+                titulo.innerText = "Visualização Atual: Zonas de Vibração Crítica (Modos de Vibração)";
+                iframe.src = "catedral_vibracoes_3d.html";  
+            }
+        }
+    </script>
+
